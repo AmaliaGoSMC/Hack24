@@ -88,3 +88,15 @@ main_risk_category_amount <- data_cleaned %>%
     group_by(project_id, main_risk_cat) %>%
     summarise(risk_category_amount = n())
 
+data_cleaned = data_cleaned %>% 
+    mutate(
+        quality_accept_with_actions = case_when(
+            strategy == "Accept" & !is.na(action_description) ~ "1",
+            TRUE ~ "0"
+        )
+    ) %>% 
+    mutate(quality_no_action = case_when(
+        strategy == "Accept" & is.na(action_description) ~ "1",
+        TRUE ~ "0"
+    ))
+
