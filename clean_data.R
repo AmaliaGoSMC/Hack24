@@ -12,7 +12,7 @@ risk <- read_csv("data/Risks.csv", show_col_types = F
     rename_with(~ str_replace_all(tolower(.), " ", "_")) %>%
     rename_with(~ str_remove_all(tolower(.), "[ .]"))%>%# Removes spaces and dots instead of replacing
     mutate(report_date = parse_date_time(report_date, "%b-%y"),
-               start = parse_date_time(start, "%b-%y"),
+           start = parse_date_time(start, "%b-%y"),
            relief = parse_date_time(relief, "%b-%y"))
 
 mitigation <- read_csv("data/Mitigations.csv", show_col_types = F) %>%
@@ -57,5 +57,16 @@ data_cleaned <- left_join(risk, mitigation, by = common_cols, relationship = "ma
             str_detect(main_risk_cat, "\\b14\\b") ~ "14. Other Risks and Contingencies",
             TRUE ~ main_risk_cat  # Retain original value if no match
         )
+    ) %>%
+    mutate(
+        action_description = str_remove(action_description, '^\\d+\\.\\s*'), # Remove leading numbers + dot + space
+        action_description = str_remove(action_description, '^\\d+\\,\\s*'), # Remove leading numbers + dot + space
+        action_description = str_remove(action_description, '^\\d+\\)\\s*'), # Remove leading numbers + ) + space
+        action_description = str_remove(action_description, '\\.\\s*'), # Remove dot + space
+        action_description = str_remove(action_description, '^"'), # Remove leading double quotes if present
+        action_description = str_remove(action_description, '^“'), # Remove leading double quotes if present
+        action_description = str_trim(action_description) # Trim any remaining spaces
     )
     
+
+a= unique(data_cleaned$action_description) %>% tibble()
