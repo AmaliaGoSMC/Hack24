@@ -3,17 +3,16 @@
 library(tidyverse)
 
 # Load the data
-risk <- read_csv("data/Risks.csv", show_col_types = F 
-    ) %>%
+risk <- read_csv("data/Risks.csv", show_col_types = F) %>%
     # get rid of end row
     filter(!`Risk ID`== "END",
            !`Start` == "#VALUE!") %>%
     distinct() %>%
     rename_with(~ str_replace_all(tolower(.), " ", "_")) %>%
     rename_with(~ str_remove_all(tolower(.), "[ .]"))%>%# Removes spaces and dots instead of replacing
-    mutate(report_date = parse_date_time(report_date, "%b-%y"),
-               start = parse_date_time(start, "%b-%y"),
-           relief = parse_date_time(relief, "%b-%y"))
+    mutate(report_date = parse_date_time(report_date, "%m-%y"),
+           start = parse_date_time(start, "%m-%y"),
+           relief = parse_date_time(relief, "%m-%y"))
 
 mitigation <- read_csv("data/Mitigations.csv", show_col_types = F) %>%
     # get rid of end row
@@ -23,6 +22,19 @@ mitigation <- read_csv("data/Mitigations.csv", show_col_types = F) %>%
     rename_with(~ str_replace_all(tolower(.), " ", "_")) %>%
     rename_with(~ str_remove_all(tolower(.), "[ .]"))%>% # Removes spaces and dots instead of replacing
     mutate(report_date = parse_date_time(report_date, "%b-%y"))
+
+# cols in common in both datasets
+common_cols <- intersect(names(risk), names(mitigation))
+
+# Join the data and further clean
+data_cleaned <- left_join(risk, mitigation, by = common_cols, relationship = "many-to-many") %>%
+    mutate(risk_unique_id = tolower(.$risk_unique_id),
+           risk_unique_id = str_replace_all(risk_unique_id, "--r", ""), # Remove "--r"
+           risk_unique_id = str_replace_all(risk_unique_id, "--", ""), # Remove "--"
+           risk_unique_id = str_trim(risk_unique_id), # Remove leading/trailing spaces
+           unique_mitigation_id = tolower(.$unique_mitigation_id),
+    ) %>%
+    select(-c(`risk_id`, ))
 
 # cols in common in both datasets
 common_cols <- intersect(names(risk), names(mitigation))
@@ -59,3 +71,9 @@ data_cleaned <- left_join(risk, mitigation, by = common_cols, relationship = "ma
         )
     )
     
+main_risk_category_amount <- data_cleaned %>%
+    mutate(project_id = as.factor(project_id)) %>%
+    select(project_id, strategy, main_risk_cat) %>%
+    filter(main_risk_cat != "END") %>%
+    group_by(project_id, main_risk_cat) %>%
+    summarise(risk_category_amount = n())
