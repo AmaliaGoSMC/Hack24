@@ -1,0 +1,33 @@
+﻿Tab,Field Name,Description,Format
+RISK,Report_Date,Date of Report (Month-Year),mmm-yy
+RISK,Organisation,"Unique identifier - see Tab ""Lists""",ORG_001
+RISK,Business_Area,"Unique identifier - see Tab ""Lists""",BA_001
+RISK,Portfolio_ID,"Unique identifier - see Tab ""Lists""",Portfolio_001
+RISK,Project_ID,"Unique identifier - see Tab ""Lists""",Project_001
+RISK,Risk_ID,Unique identifier,Text
+RISK,Risk_Unique_ID,Concatentation of Project_ID + Risk_ID,Project_001_Text
+RISK,Risk_Type,2 possible values: Risk / Opportunity,Text
+RISK,Contingency_Type,3 possible values: Project Contingency / Management Contingency / Financial Contingency,Text
+RISK,Status,2 Possible values: Open / Closed,Text
+RISK,Criticality,3 possible values: H1 / H2 / H3,Text
+RISK,Risk_Category,"14 possible values to categorise the type of risk - see Tab ""Lists""",Text
+RISK,Risk_Title,Free Text field containing a descriptive title for the Risk ,Free Text
+RISK,Owner,"Unique Identifier - see Tab ""Lists""",Person_001
+RISK,Start,Date risk was raised,mmm-yy
+RISK,End,Date risk likely to be closed (either mititgated or impacted),mmm-yy
+RISK,PreMit_Probability,Current (or Pre-mitigatted) probability of risk occurring ,0
+RISK,PreMit_Cost,Current (or Pre-mitigatted) cost of risk impacting ,£0.000k
+RISK,PreMit_Factored_Cost,Multiplication of PreMit_Probability x PreMit_Cost,£0.000k
+RISK,Strategy,6 possible values : Accept / Avoid / Reduce / Reject / Transfer / Exploit,Text
+RISK,PostMit _Probability,Post-mitigated probability of risk occurring ,0
+RISK,PostMit_Cost,Post-mitigated cost of risk impacting ,£0.000k
+RISK,PostMit_Factored_Cost,Multiplication of PostMit_Probability x PostMit_Cost,£0.000k
+RISK,PostMit_Criticality,3 possible values: H1 / H2 / H3,Text
+RISK,Trend,Monthly trend state - 3 possible values Worsening / Improving / Stable,Text
+MITIGATION,Serial,Serial to enable unique identifier for each mitigation action,Number
+MITIGATION,Report_Date,Unique identifier - Identical to the same field in the Risk Tab,mmm-yy
+MITIGATION,Project_ID,Unique identifier - Identical to the same field in the Risk Tab,Project_001
+MITIGATION,Risk_ID,Unique identifier - Identical to the same field in the Risk Tab,Text
+MITIGATION,Unique_Mitigation_ID,Concatenation of Project_ID + Risk_ID + Serial,Project_001_Text_nnnnnn
+MITIGATION,Mit Action Owner,"Unique Identifier - see Tab ""Lists""",Person_001
+MITIGATION,Mit_Action_Description,Free Text field describing a Mitigation action for the relevant Risk,Free Text
