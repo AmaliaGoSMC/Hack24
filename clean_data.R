@@ -3,7 +3,8 @@
 library(tidyverse)
 
 # Load the data
-risk <- read_csv("data/Risks.csv", show_col_types = F) %>%
+risk <- read_csv("data/Risks.csv", show_col_types = F 
+    ) %>%
     # get rid of end row
     filter(!`Risk ID`== "END") %>%
     distinct() %>%
@@ -29,5 +30,28 @@ data_cleaned <- left_join(risk, mitigation, by = common_cols, relationship = "ma
            risk_unique_id = str_replace_all(risk_unique_id, "--", ""), # Remove "--"
            risk_unique_id = str_trim(risk_unique_id), # Remove leading/trailing spaces
            unique_mitigation_id = tolower(.$unique_mitigation_id),
+           
     ) %>%
-    select(-c(`risk_id`, ))
+    select(-c(`risk_id`, )) %>% 
+    # make unique main_risk_cat variable
+    mutate(
+        main_risk_cat = tolower(main_risk_cat),  # Convert to lowercase
+        main_risk_cat = case_when(
+            str_detect(main_risk_cat, "\\b1\\b") ~ "1. Business Strategy and Objectives",
+            str_detect(main_risk_cat, "\\b2\\b") ~ "2. Bid Management",
+            str_detect(main_risk_cat, "\\b3\\b") ~ "3. Competitors",
+            str_detect(main_risk_cat, "\\b4\\b") ~ "4. Customers",
+            str_detect(main_risk_cat, "\\b5\\b") ~ "5. Project Management",
+            str_detect(main_risk_cat, "\\b6\\b") ~ "6. Contractual/Legal",
+            str_detect(main_risk_cat, "\\b7\\b") ~ "7. Finance",
+            str_detect(main_risk_cat, "\\b8\\b") ~ "8. System Engineering",
+            str_detect(main_risk_cat, "\\b9\\b") ~ "9. Hardware/Software Development",
+            str_detect(main_risk_cat, "\\b10\\b") ~ "10. System Integration, Verification & Validation",
+            str_detect(main_risk_cat, "\\b11\\b") ~ "11. Supply Chain",
+            str_detect(main_risk_cat, "\\b12\\b") ~ "12. Acquisition and Offsets",
+            str_detect(main_risk_cat, "\\b13\\b") ~ "13. Logistic Support and Services",
+            str_detect(main_risk_cat, "\\b14\\b") ~ "14. Other Risks and Contingencies",
+            TRUE ~ main_risk_cat  # Retain original value if no match
+        )
+    )
+    
