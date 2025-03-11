@@ -10,17 +10,18 @@ risk <- read_csv("data/Risks.csv", show_col_types = F) %>%
     distinct() %>%
     rename_with(~ str_replace_all(tolower(.), " ", "_")) %>%
     rename_with(~ str_remove_all(tolower(.), "[ .]"))%>%# Removes spaces and dots instead of replacing
-    mutate(report_date = parse_date_time(start, "%b-%y"),
+    mutate(report_date = parse_date_time(report_date, "%b-%y"),
                start = parse_date_time(start, "%b-%y"),
            relief = parse_date_time(relief, "%b-%y"))
 
 mitigation <- read_csv("data/Mitigations.csv", show_col_types = F) %>%
     # get rid of end row
-    filter(!`Risk ID`== "END") %>%
+    filter(!`Risk ID`== "END",
+           !`Report Date` == "#VALUE!") %>%
     distinct() %>%
     rename_with(~ str_replace_all(tolower(.), " ", "_")) %>%
-    rename_with(~ str_remove_all(tolower(.), "[ .]")) # Removes spaces and dots instead of replacing
-
+    rename_with(~ str_remove_all(tolower(.), "[ .]"))%>% # Removes spaces and dots instead of replacing
+    mutate(report_date = parse_date_time(report_date, "%b-%y"))
 
 # cols in common in both datasets
 common_cols <- intersect(names(risk), names(mitigation))
