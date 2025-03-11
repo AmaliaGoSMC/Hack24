@@ -22,17 +22,14 @@ source("clean_data.R")
 #1. Risk Velocity: Measuring the speed at which risks escalate 
 
 # Speed of the potential change for each risk between H1, H2 and H3 
-# Determine how quickly each risk escalates by analysing the time between critical changes.
+# Determine how quickly each risk escalates by analysing the time between critical changes, looking at start date
 
 data_cleaned = data_cleaned %>% 
     mutate(risk_duration = as.numeric(difftime(relief, start, units = "days")))
 
 velocity = data_cleaned %>% 
-    select(risk_unique_id, criticality, start, relief) %>% 
+    select(report_date, risk_unique_id, criticality, start) %>% 
     distinct() 
-
-
-
 
 #2. Resolutions Rate: Evaluating the success rate of mitigating risks over time 
 
@@ -43,6 +40,7 @@ velocity = data_cleaned %>%
 resolution_rate <- data_cleaned %>%
     # Group by risk_unique_id to summarize for each distinct risk
     group_by(risk_unique_id) %>%
+    filter(strategy == "Accept"| strategy == "Reduce") %>% # Need to know whether to use this?
     summarise(
         is_closed = any(status == "Closed" & !is.na(unique_mitigation_id)),
         is_open_with_mit = any(status == "Open" & !is.na(unique_mitigation_id)),
@@ -62,7 +60,6 @@ resolution_rate <- data_cleaned %>%
 
 
 #3. Emergence Rate: Identifying periods of triggers associated with new risk idenitifcation 
-
 # Calculation: Analysing the frequency of new risks over time.
 # Useful plot looking at the trend over various months 
 
@@ -84,6 +81,9 @@ emergence_rate <- emergence_rate %>%
 #4. Likelihood of Risk and Impact Drift: Tracking shifts in project risk exposure
 
 # Calculation: Comparing changes in PreMit_Probability and PreMit_Cost over time.
+
+
+
 
 
 
