@@ -13,6 +13,7 @@ library("tidyverse")
 
 risk_data = read.csv("data/Risks.csv")
 mitigation_data = read.csv("data/Mitigations.csv")
+source("clean_data.R")
 
 # Calculating the required metrics -----------------------------------------------------
 # Starting with the calculations recommended in the challenge 
@@ -26,24 +27,33 @@ mitigation_data = read.csv("data/Mitigations.csv")
 # In the first format 
 #  To provide a time-base, the data generates a risk update on a monthly basis for 30 months.
 
-risk_data <- risk_data %>% 
-    mutate(Start = as.Date(Start, format="%Y-%m"))
-
 
 
 
 #2. Resolutions Rate: Evaluating the success rate of mitigating risks over time 
 
 # Calculation: Dividing the number of closed risks by the total number of risks.
-# Need to add whether risk tried to be mitigated
+# This doesn't add to 1 as some risks have more than one mitigation 
 
-resolution_rate = risk_data %>% 
+
+resolution_rate <- data_cleaned %>%
+    # Group by risk_unique_id to summarize for each distinct risk
+    group_by(risk_unique_id) %>%
     summarise(
-        closed_risks = sum(Status == "Closed"),
-        total_risks = n()
-    ) %>% 
+        is_closed = any(status == "Closed" & !is.na(unique_mitigation_id)),
+        is_open_with_mit = any(status == "Open" & !is.na(unique_mitigation_id)),
+        is_open_no_mit = any(status == "Open" & is.na(unique_mitigation_id))
+    ) %>%
+    summarise(
+        closed_mit_risks = sum(is_closed),
+        open_mit_risks = sum(is_open_with_mit),
+        open_no_mit_risks = sum(is_open_no_mit),
+        total_risks = n_distinct(risk_unique_id)
+    ) %>%
     mutate(
-        resolution_rate = closed_risks / total_risks
+        closed_mit_risks_rate = closed_mit_risks / total_risks,
+        open_mit_risks_rate = open_mit_risks / total_risks,
+        open_no_mit_risks_rate = open_no_mit_risks / total_risks
     )
 
 
@@ -52,11 +62,12 @@ resolution_rate = risk_data %>%
 # Calculation: Analysing the frequency of new risks over time.
 # Useful plot looking at the trend over various months 
 
-emergence_rate <- risk_data %>%
-    group_by(Start) %>%
+emergence_rate <- data_cleaned %>%
+    group_by(start) %>%
     summarise(
-        new_risks = n()
-    )
+        new_risks = n_distinct(risk_unique_id)
+    ) %>% 
+    filter(!start =="#VALUE!")
 
 total_risks <- sum(emergence_rate$new_risks)
 total_risks
@@ -69,11 +80,13 @@ emergence_rate <- emergence_rate %>%
 
 #4. Likelihood of Risk and Impact Drift: Tracking shifts in project risk exposure
 
+
 # Calculation: Comparing changes in PreMit_Probability and PreMit_Cost over time.
 
 #5. Risk Clustering: Highlight interdependent risks prone to cascading failures 
 
 # Calculation: This requires analysing relationships between risks
+#. Amalia doing 
 
 #6. Additional Metrics:
 
