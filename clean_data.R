@@ -3,7 +3,7 @@
 library(tidyverse)
 
 # Load the data
-risk <- read_csv("/Users/amalia.gomoiu1/Desktop/Hack24/data/Risks.csv", show_col_types = F) %>%
+risk <- read_csv("data/Risks.csv", show_col_types = F) %>%
     # get rid of end row
     filter(!`Risk ID`== "END") %>%
     distinct() %>%
@@ -13,7 +13,7 @@ risk <- read_csv("/Users/amalia.gomoiu1/Desktop/Hack24/data/Risks.csv", show_col
 
 
 
-mitigation <- read_csv("/Users/amalia.gomoiu1/Desktop/Hack24/data/Mitigations.csv", show_col_types = F) %>%
+mitigation <- read_csv("data/Mitigations.csv", show_col_types = F) %>%
     # get rid of end row
     filter(!`Risk ID`== "END") %>%
     distinct() %>%
