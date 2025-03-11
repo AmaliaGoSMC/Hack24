@@ -171,7 +171,7 @@ print(risk_cluster_summary)
 # 
 # Example:
 #     
-#  Cluster 1 includes "System Integration, Verification & Validation", "Business Strategy and Objectives", etc.
+# Cluster 1 includes "System Integration, Verification & Validation", "Business Strategy and Objectives", etc.
 # 
 # Cluster 2 includes "Project Management" (which appears twice, possibly due to naming issues).
 # 
@@ -372,8 +372,6 @@ top_savings_projects <- project_costs %>%
 # View results
 print(top_savings_projects)
 
-
-
 # most savings ------------------------------------------------------------
 
 ggplot(top_savings_projects, aes(x = reorder(project_id, mitigation_savings), 
@@ -383,3 +381,26 @@ ggplot(top_savings_projects, aes(x = reorder(project_id, mitigation_savings),
     theme_minimal() +
     labs(title = "Top 10 Projects with the Highest Mitigation Savings", 
          x = "Project ID", y = "Total Savings from Mitigation")
+
+
+# cluster costs -----------------------------------------------------------
+
+# Select the top 20 projects with the highest total savings
+top_20_savings_projects <- project_cluster_costs %>%
+    group_by(project_id) %>%
+    summarise(total_mitigation_savings = sum(mitigation_savings, na.rm = TRUE)) %>%
+    arrange(desc(total_mitigation_savings)) %>%
+    slice_head(n = 20) # Select only the top 20
+
+# Filter the cost data for only these projects
+top_20_project_savings <- project_cluster_costs %>%
+    filter(project_id %in% top_20_savings_projects$project_id)
+
+ggplot(top_20_project_savings, aes(x = reorder(project_id, mitigation_savings), 
+                                   y = mitigation_savings, fill = as.factor(Cluster))) +
+    geom_bar(stat = "identity", alpha = 0.8) +
+    coord_flip() +
+    theme_minimal() +
+    labs(title = "Top 20 Projects with the Highest Mitigation Savings: Cost Breakdown by Cluster", 
+         x = "Project ID", y = "Total Savings from Mitigation", fill = "Risk Cluster") +
+    scale_fill_brewer(palette = "Set2") # Assign distinct colors to clusters
