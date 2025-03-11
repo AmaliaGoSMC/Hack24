@@ -21,11 +21,15 @@ source("clean_data.R")
 # Loading in the data -----------------------------------------------------
 #1. Risk Velocity: Measuring the speed at which risks escalate 
 
-# Speed of the potenntial change
-# Determining difference between start and end date 
+# Speed of the potential change for each risk between H1, H2 and H3 
+# Determine how quickly each risk escalates by analysing the time between critical changes.
 
-# In the first format 
-#  To provide a time-base, the data generates a risk update on a monthly basis for 30 months.
+data_cleaned = data_cleaned %>% 
+    mutate(risk_duration = as.numeric(difftime(relief, start, units = "days")))
+
+velocity = data_cleaned %>% 
+    select(risk_unique_id, criticality, start, relief) %>% 
+    distinct()
 
 
 
@@ -79,6 +83,8 @@ emergence_rate <- emergence_rate %>%
     )
 
 #4. Likelihood of Risk and Impact Drift: Tracking shifts in project risk exposure
+
+
 
 
 # Calculation: Comparing changes in PreMit_Probability and PreMit_Cost over time.
