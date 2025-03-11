@@ -10,15 +10,9 @@ risk <- read_csv("data/Risks.csv", show_col_types = F) %>%
     distinct() %>%
     rename_with(~ str_replace_all(tolower(.), " ", "_")) %>%
     rename_with(~ str_remove_all(tolower(.), "[ .]"))%>%# Removes spaces and dots instead of replacing
-<<<<<<< HEAD
-    mutate(report_date = parse_date_time(report_date, "%b-%y"),
-           start = parse_date_time(start, "%b-%y"),
-           relief = parse_date_time(relief, "%b-%y"))
-=======
     mutate(report_date = parse_date_time(report_date, "%m-%y"),
            start = parse_date_time(start, "%m-%y"),
            relief = parse_date_time(relief, "%m-%y"))
->>>>>>> 2cc625b41d188e96dffe2c26da9567cd97ba7fd4
 
 mitigation <- read_csv("data/Mitigations.csv", show_col_types = F) %>%
     # get rid of end row
@@ -86,14 +80,11 @@ data_cleaned <- left_join(risk, mitigation, by = common_cols, relationship = "ma
         action_description = str_trim(action_description) # Trim any remaining spaces
     )
     
-<<<<<<< HEAD
 
-a= unique(data_cleaned$action_description) %>% tibble()
-=======
 main_risk_category_amount <- data_cleaned %>%
     mutate(project_id = as.factor(project_id)) %>%
     select(project_id, strategy, main_risk_cat) %>%
     filter(main_risk_cat != "END") %>%
     group_by(project_id, main_risk_cat) %>%
     summarise(risk_category_amount = n())
->>>>>>> 2cc625b41d188e96dffe2c26da9567cd97ba7fd4
+
