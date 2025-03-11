@@ -2,17 +2,31 @@
 # Load the necessary packages
 library(tidyverse)
 
+
 # Load the data
 risk <- read_csv("data/Risks.csv", show_col_types = F) %>%
-    # get rid of end row
-    filter(!`Risk ID`== "END",
-           !`Start` == "#VALUE!") %>%
+    # Remove rows with END in Risk ID and #VALUE! in Start
+    filter(`Risk ID` != "END",
+           `Start` != "#VALUE!") %>%
     distinct() %>%
+    # Clean column names: convert to lowercase and replace spaces with underscores
     rename_with(~ str_replace_all(tolower(.), " ", "_")) %>%
-    rename_with(~ str_remove_all(tolower(.), "[ .]"))%>%# Removes spaces and dots instead of replacing
-    mutate(report_date = parse_date_time(report_date, "%m-%y"),
-           start = parse_date_time(start, "%m-%y"),
-           relief = parse_date_time(relief, "%m-%y"))
+    # Clean column names: remove dots
+    rename_with(~ str_remove_all(.x, "\\.")) %>%
+    mutate(
+        # Parse dates using consistent format
+        report_date = parse_date_time(report_date, "%m-%y"),
+        start = parse_date_time(start, "%m-%y"),
+        relief = parse_date_time(relief, "%m-%y"),
+        
+        # Clean and convert cost columns
+        across(c(pre_cost, post_cost, pre_factored_cost, post_factored_cost),
+               ~ str_replace_all(.x, "\\£", "") %>%
+                   str_trim() %>%
+                   str_replace_all("k$", "*1000") %>%
+                   parse_number()
+        )
+    )
 
 mitigation <- read_csv("data/Mitigations.csv", show_col_types = F) %>%
     # get rid of end row
