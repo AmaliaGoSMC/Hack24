@@ -70,8 +70,7 @@ emergence_rate <- data_cleaned %>%
     group_by(start) %>%
     summarise(
         new_risks = n_distinct(risk_unique_id)
-    ) %>% 
-    filter(!start =="#VALUE!")
+    ) 
 
 total_risks <- sum(emergence_rate$new_risks)
 total_risks
@@ -84,8 +83,9 @@ emergence_rate <- emergence_rate %>%
 
 #4. Likelihood of Risk and Impact Drift: Tracking shifts in project risk exposure
 
-
 # Calculation: Comparing changes in PreMit_Probability and PreMit_Cost over time.
+
+
 
 #5. Risk Clustering: Highlight interdependent risks prone to cascading failures 
 
