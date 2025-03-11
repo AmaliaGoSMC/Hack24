@@ -29,7 +29,7 @@ data_cleaned = data_cleaned %>%
 
 velocity = data_cleaned %>% 
     select(risk_unique_id, criticality, start, relief) %>% 
-    distinct()
+    distinct() 
 
 
 
@@ -83,8 +83,6 @@ emergence_rate <- emergence_rate %>%
     )
 
 #4. Likelihood of Risk and Impact Drift: Tracking shifts in project risk exposure
-
-
 
 
 # Calculation: Comparing changes in PreMit_Probability and PreMit_Cost over time.
