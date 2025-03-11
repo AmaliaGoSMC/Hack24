@@ -24,7 +24,7 @@ source("clean_data.R")
 # Speed of the potential change for each risk between H1, H2 and H3 
 # Determine how quickly each risk escalates by analysing the time between critical changes, looking at start date
 
-#Looking at risk criticality over time
+#1.1 Looking at risk criticality over time
 velocity = data_cleaned %>%
     select(report_date, risk_unique_id, criticality) %>%
     distinct()
@@ -53,40 +53,21 @@ criticality_range <- data_cleaned %>%
     ) %>% 
     filter(change != "0")
     
+#2. Evaluating the success rate of mitigating risks over time 
 
-
-    
-
-# Print results
-print(criticality_range)
-
-
-#2. Resolutions Rate: Evaluating the success rate of mitigating risks over time 
-# Removing acceptance
-
-# Calculation: Dividing the number of closed risks by the total number of risks.
-# This doesn't add to 1 as some risks have more than one mitigation 
-
-
-resolution_rate <- data_cleaned %>%
-    # Group by risk_unique_id to summarize for each distinct risk
-    group_by(risk_unique_id) %>%
-    summarise(
-        is_closed = any(status == "Closed" & !is.na(unique_mitigation_id)),
-        is_open_with_mit = any(status == "Open" & !is.na(unique_mitigation_id)),
-        is_open_no_mit = any(status == "Open" & is.na(unique_mitigation_id))
-    ) %>%
-    summarise(
-        closed_mit_risks = sum(is_closed),
-        open_mit_risks = sum(is_open_with_mit),
-        open_no_mit_risks = sum(is_open_no_mit),
-        total_risks = n_distinct(risk_unique_id)
-    ) %>%
+data_cleaned = data_cleaned %>%
     mutate(
-        closed_mit_risks_rate = closed_mit_risks / total_risks,
-        open_mit_risks_rate = open_mit_risks / total_risks,
-        open_no_mit_risks_rate = open_no_mit_risks / total_risks
-    )
+        post_prob = as.numeric(post_prob),
+        pre_prob = as.numeric(pre_prob)
+    ) %>%
+    group_by(risk_unique_id) %>%
+    mutate(
+        prob_change = case_when(!is.na(unique_mitigation_id) ~ post_prob - pre_prob # Case when mitigation 
+        )) %>% 
+    mutate(
+        cost_change = case_when(!is.na(unique_mitigation_id) ~ post_cost - pre_cost # Case when mitigation 
+        )  )
+
 #3. Emergence Rate: Identifying periods of triggers associated with new risk idenitifcation 
 # Calculation: Analysing the frequency of new risks over time.
 # Useful plot looking at the trend over various months 
@@ -108,23 +89,54 @@ emergence_rate <- emergence_rate %>%
 
 #4. Likelihood of Risk and Impact Drift: Tracking shifts in project risk exposure
 
-likelihood <- data_cleaned %>%
-    group_by(risk_unique_id) %>% 
-    select(report_date, risk_unique_id, pre_factored_cost, post_factored_cost)
+#4.1 Looking at change in probability over time 
+
+probability_change <- data_cleaned %>%
+    select(risk_unique_id, report_date, pre_prob) %>%
+    distinct() %>% 
+    group_by(risk_unique_id) %>%
+    mutate(
+        prev_prob = lag(pre_prob),
+        prev_date = min(report_date),
+        change = pre_prob -prev_prob ,
+        time_diff = as.numeric(difftime(report_date, prev_date, units = "days")),
+        rate_of_change = change/time_diff
+    ) %>% 
+    filter(change != "0")
 
 
+#4.2 Looking at change in cost over time
 
-# Calculation: Comparing changes in PreMit_Probability and PreMit_Cost over time.
+cost_change <- data_cleaned %>%
+    select(risk_unique_id, report_date, pre_cost) %>%
+    distinct() %>% 
+    group_by(risk_unique_id) %>%
+    mutate(
+        prev_prob = lag(pre_cost),
+        prev_date = min(report_date),
+        change = pre_cost -prev_prob,
+        time_diff = as.numeric(difftime(report_date, prev_date, units = "days")),
+        rate_of_change = change/time_diff
+    ) %>% 
+    filter(change != "0")
 
-
-# Migation to reduce cost and how good to reuce probablityt 
-
-
-
-
-
-
-
-
-
-
+#5. Resolution rates
+resolution_rate <- data_cleaned %>%
+    # Group by risk_unique_id to summarize for each distinct risk
+    group_by(risk_unique_id) %>%
+    summarise(
+        is_closed = any(status == "Closed" & !is.na(unique_mitigation_id)),
+        is_open_with_mit = any(status == "Open" & !is.na(unique_mitigation_id)),
+        is_open_no_mit = any(status == "Open" & is.na(unique_mitigation_id))
+    ) %>%
+    summarise(
+        closed_mit_risks = sum(is_closed),
+        open_mit_risks = sum(is_open_with_mit),
+        open_no_mit_risks = sum(is_open_no_mit),
+        total_risks = n_distinct(risk_unique_id)
+    ) %>%
+    mutate(
+        closed_mit_risks_rate = closed_mit_risks / total_risks,
+        open_mit_risks_rate = open_mit_risks / total_risks,
+        open_no_mit_risks_rate = open_no_mit_risks / total_risks
+    )
