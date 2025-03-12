@@ -51,8 +51,8 @@ ui <- fluidPage(
                  h3("Evidence-Based Recommendations"),
                  tags$ul(
                    tags$li("Recommendation 1: Based on the predictive analysis from the risk velocity graphs, it is evident that the highest rate of change for risk criticality, probability, and cost occurs early in the risk lifecycle (within 300 days). Specifically, these changes are most impactful within the initial period after a risk is reported. Therefore, it is crucial to implement mitigation strategies as soon as possible after risks are identified to prevent escalation and effectively manage their impact."),
-                   tags$li("Recommendation 2"),
-                   tags$li("Recommendation 3")
+                   tags$li("Recommendation 2: Based on the clustering analysis from the dendrogram, it is evident which risk categories tend to co-occur. This insight is valuable for identifying potential risks that are likely to arise in a project when certain other risks are present. By understanding these co-occurrence patterns, project managers can better anticipate and prepare for potential risks, ensuring they stay on track and are proactive in managing risk dependencies."),
+                   tags$li("Recommendation 3: Based on the predictive analysis from the risk cost graphs, it is projected that both pre- and post-mitigation costs will decrease in 2020, as indicated by the moving average over the past 30 months. This trend provides valuable insights for project planning and cost allocation, enabling more accurate budgeting and resource management. By leveraging these projections, project managers can optimise financial planning and ensure more efficient use of resources.")
                  ),
                  
                  br(), br(),  # Add spacing
@@ -237,7 +237,8 @@ server <- function(input, output, session) {
           )
       } else if (input$analysis_type == "Risk Cost") {
           # Add content for Risk Cost here
-          p("Risk Cost analysis will be displayed here.")
+          tags$p("This graph shows the total pre- and post-risk costs over a recent period and forecasts these costs for the next year, helping managers plan and allocate resources effectively.")
+          tags$img(src = "images/pre_post_cost_forecast.png", width = "700", height = "500")
       } else {
           # Add content for Regression here
           p("Regression analysis will be displayed here.")
