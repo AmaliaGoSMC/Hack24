@@ -50,7 +50,7 @@ ui <- fluidPage(
         tabPanel("Summary", 
                  h3("Evidence-Based Recommendations"),
                  tags$ul(
-                   tags$li("Recommendation 1"),
+                   tags$li("Recommendation 1: Based on the predictive analysis from the risk velocity graphs, it is evident that the highest rate of change for risk criticality, probability, and cost occurs early in the risk lifecycle (within 300 days). Specifically, these changes are most impactful within the initial period after a risk is reported. Therefore, it is crucial to implement mitigation strategies as soon as possible after risks are identified to prevent escalation and effectively manage their impact."),
                    tags$li("Recommendation 2"),
                    tags$li("Recommendation 3")
                  ),
@@ -89,6 +89,7 @@ ui <- fluidPage(
                  ),
                  br(),
                  h3("Risks & Mitigations per Project"),
+                 p("The graph highlights the number of mitigations and risks per project, indicating which project required the most mitigations to address risks. This is important because it reveals the distribution of mitigations across projects and allows you to start asking questions about why some projects require more mitigations, such as differences in risk impact, project size, or cost."),
                  plotOutput("risk_mitigation_per_project")
         ),
         
@@ -100,11 +101,12 @@ ui <- fluidPage(
                  ),
         tabPanel("Opportunities", 
                  h3("Risk Opportunities"),
-                 p("This section will include opportunities analysis."),
+                 p("This plot shows how different risk categories tend to occur together in projects. The closer two risk categories are in the diagram, the more often they co-occur. This helps identify potential risk dependencies and informs mitigation strategies."),
+                 div(style = "margin-top: -50px;", 
+                     tags$img(src = "images/risk_dendrogram.svg", width = "500", height = "500")),
+                 p("This chart shows the Top 20 Projects with the highest mitigation savings, grouped by risk clusters: Strategic & Technical, Supply Chain & Management, Financial & Operational, and Business & Bidding Risks. It helps identify which projects have benefited most from mitigation strategies and how savings are distributed across risk categories."),
                  div(style = "margin-bottom: -50px;", 
                      tags$img(src = "images/top_20_plot.svg", width = "500", height = "500")),
-                 div(style = "margin-top: -50px;", 
-                     tags$img(src = "images/risk_dendrogram.svg", width = "500", height = "500"))
         ),
         
         tabPanel("Predictive Analysis", 
@@ -220,9 +222,18 @@ server <- function(input, output, session) {
       if (input$analysis_type == "Risk Velocity") {
           fluidRow(
               column(12, 
-                     p("This graph illustrates the rate at which escalates. Focusing, on the pre mitigation criticality of the risk it can be seen that")),
+                     p("This graph illustrates the rate at which risks escalate in criticality over time, with H1 being the highest level of criticality. Focusing on the pre-mitigation criticality of risks, it is evident that the first 300 days after a risk is reported are crucial. During this period, the highest rate of escalation occurs."),
+                     p("The blue points indicate risks transitioning from H3 to H2, while the red points show risks escalating from H2 to the most critical level, H1.")
+                     ),
               column(12, 
-                     tags$img(src = "images/risk_velocity_criticality.svg", width = "500", height = "500"))
+                     tags$img(src = "images/risk_velocity_criticality.svg", width = "500", height = "500")),
+              fluidRow(
+                  p("The following two graphs build upon the previous analysis by examining the rate of change in risk probability and cost before mitigation. Consistent with the earlier findings, these graphs also demonstrate that the highest rate of change occurs within the first 300 days after a risk is reported"),
+                  column(6, 
+                         tags$img(src = "images/cost_change.svg", width = "500", height = "500")),
+                  column(6, 
+                         tags$img(src = "images/likelihood_impact.svg", width = "500", height = "500"))
+              ),
           )
       } else if (input$analysis_type == "Risk Cost") {
           # Add content for Risk Cost here
