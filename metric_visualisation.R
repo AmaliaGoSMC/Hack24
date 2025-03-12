@@ -5,8 +5,10 @@ library("readxl")
 library("janitor")
 library("tidyverse")
 library("plotly")
+library("htmlwidgets")
 
 source("metric_calculation.R")
+install.packages("svglite")
 
 
 # Risk Velocity: Measuring the speed at which risks escalate -----------------------------------------------------
@@ -32,6 +34,7 @@ plot1 <- ggplot(criticality_range, aes(x = time_diff,
 plotly_plot <- ggplotly(plot1, tooltip = "text")
 plotly_plot
 
+ggsave("images/risk_velocity_criticality.svg", plot = plot1, width = 8, height = 6, dpi = 300)
 
 #2 Plot of change in critcial level before and after mitigation.
 
@@ -41,7 +44,6 @@ sankey_data <- postmit_criticality_range %>%
         from = paste0("Before: H", criticality_level),
         to = paste0("After: H", postmit_criticality_level)
     )
-
 # Count transitions
 transition_counts <- sankey_data %>%
     group_by(from, to) %>%
@@ -64,6 +66,8 @@ my_color <- 'd3.scaleOrdinal() .domain(["Before: 1", "Before: 2", "Before: 3", "
 sankeyNetwork(Links = sankey_links, Nodes = sankey_nodes, Source = "source", Target = "target", Value = "count", NodeID = "name", colourScale = JS(my_color))
 
 
+
+saveWidget(sankeyNetwork(Links = sankey_links, Nodes = sankey_nodes, Source = "source", Target = "target", Value = "count", NodeID = "name", colourScale = JS(my_color)), "sankey_diagram.html")
 # #2. Evaluating the success rate of mitigating risks over time  -----------------------------------------------------
 
 # Density plot of average probability changes before and after mit
@@ -90,6 +94,8 @@ plot2 <- ggplot(avg_changes, aes(x = avg_prob_change, y = avg_cost_change, text 
 plotly_plot2 <- ggplotly(plot2, tooltip = "text")
 plotly_plot2
 
+ggsave("images/evaluating_success_rate_of_mitigation.svg", plot = plot2, width = 8, height = 6, dpi = 300)
+
 
 #  3. Emergence Rate: Identifying periods of triggers associated with new risk idenitifcation ----------------------------------------------------- 
 
@@ -106,6 +112,9 @@ plot3 <- ggplot(emergence_rate, aes(x = month_name, y = emergence_rate,
 plotly_plot3 <- ggplotly(plot3, tooltip = "text")
 plotly_plot3
 
+ggsave("images/monthly_emergence_rate.svg", plot = plot3, width = 8, height = 6, dpi = 300)
+
+
 #4. Likelihood of Risk and Impact Drift: Tracking shifts in project risk exposure ----------------------------------------------------- 
 plot4 <- ggplot(probability_change, aes(x = time_diff, y = rate_of_change,  text = paste0("Rate of change: ", round(rate_of_change, 4), 
                                                                                           "<br>Time difference:",time_diff ))) +
@@ -114,6 +123,9 @@ plot4 <- ggplot(probability_change, aes(x = time_diff, y = rate_of_change,  text
          x = "Time Difference (Days)", y = "Rate of Change") +
     theme_classic() +
     geom_vline(xintercept = 300, linetype = "dashed", color = "red")
+
+ggsave("images/likelihood_impact.svg", plot = plot4, width = 8, height = 6, dpi = 300)
+
 
 plotly_plot4 <- ggplotly(plot4, tooltip = "text")
 plotly_plot4
@@ -127,7 +139,8 @@ plot5 <- ggplot(cost_change, aes(x = time_diff, y = rate_of_change,  text = past
     theme_classic() +
     geom_vline(xintercept = 300, linetype = "dashed", color = "red")
 
+ggsave("images/cost_change.svg", plot = plot5, width = 8, height = 6, dpi = 300)
+
+
 plotly_plot5 <- ggplotly(plot5, tooltip = "text")
 plotly_plot5
-
-

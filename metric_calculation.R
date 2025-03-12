@@ -75,8 +75,7 @@ postmit_criticality_range <- data_cleaned %>%
         postmit_change = postmit_criticality_level - criticality_level,
         postmit_improvement = ifelse(postmit_change > 0, "Improved", ifelse(postmit_change > 0, "Worsened", "No Change"))
     ) %>%
-    filter(!is.na(postmit_change)) %>% 
-    filter(!is.na())
+    filter(!is.na(postmit_change)) 
 
 
 
@@ -140,23 +139,6 @@ emergence_rate <- emergence_rate %>%
 #4. Likelihood of Risk and Impact Drift: Tracking shifts in project risk exposure
 
 #4.1 Looking at change in probability over time (likelihood)
-
-probability_change <- data_cleaned %>%
-    select(risk_unique_id, report_date, pre_prob) %>%
-    distinct() %>%
-    mutate(
-        pre_prob = as.numeric(pre_prob) # Convert to numeric
-    ) %>%
-    arrange(risk_unique_id, report_date) %>%
-    group_by(risk_unique_id) %>%
-    mutate(
-        prev_prob = lag(pre_prob),
-        prev_date = lag(report_date),
-        change = pre_prob - prev_prob,
-        time_diff = as.numeric(difftime(report_date, prev_date, units = "days")),
-        rate_of_change = ifelse(!is.na(change) & !is.na(time_diff), change / time_diff, NA)
-    ) %>%
-    filter(change > 0)
 
 probability_change <- data_cleaned %>%
     select(risk_unique_id, report_date, pre_prob) %>%
