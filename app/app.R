@@ -4,11 +4,14 @@ library(DT)
 library(ggplot2)
 library(dplyr)
 library(shinyWidgets)
+library(readr)
 
 # Load the cleaned dataset
 #data_cleaned <- read.csv("~/Downloads/cleaned_data.csv", stringsAsFactors = FALSE)
 
 # Convert report_date column to Date format
+
+data_cleaned = read_csv("data_cleaned.csv")
 data_cleaned$report_date <- as.Date(data_cleaned$report_date, format = "%Y-%m-%d")
 
 # Define UI
@@ -253,7 +256,7 @@ server <- function(input, output, session) {
           )
       } else {
           # Add content for Regression here
-          p("Regression analysis will be displayed here.")
+          
       }
   })
 }

@@ -118,3 +118,5 @@ data_cleaned = data_cleaned %>%
 data_cleaned = data_cleaned %>% 
     mutate(pre_prob = as.numeric(pre_prob)) %>% 
     mutate(post_prob = as.numeric(post_prob))
+
+write.csv(data_cleaned, "data_cleaned.csv")
