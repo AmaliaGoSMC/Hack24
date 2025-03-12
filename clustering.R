@@ -143,7 +143,20 @@ top_projects <- project_exposure_summary %>%
 
 
 # cluster costs -----------------------------------------------------------
+# Merge project data with clusters and cost information
+project_cluster_costs <- data_cleaned %>%
+    left_join(risk_cluster_summary, c("main_risk_cat" = "Risk_Category")) %>% # Assign clusters
+    group_by(project_id, Cluster) %>%
+    summarise(
+        total_pre_mitigation_cost = sum(pre_factored_cost, na.rm = TRUE),
+        total_post_mitigation_cost = sum(post_factored_cost, na.rm = TRUE),
+        mitigation_savings = total_pre_mitigation_cost - total_post_mitigation_cost,
+        mitigation_effectiveness = (mitigation_savings / total_pre_mitigation_cost) * 100
+    ) %>%
+    arrange(desc(total_pre_mitigation_cost))
 
+# View project-cluster cost breakdown
+print(project_cluster_costs)
 # Select the top 20 projects with the highest total savings
 top_20_savings_projects <- project_cluster_costs %>%
     group_by(project_id) %>%
