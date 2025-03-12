@@ -115,3 +115,6 @@ data_cleaned = data_cleaned %>%
         TRUE ~ "0"
     ))
 
+data_cleaned = data_cleaned %>% 
+    mutate(pre_prob = as.numeric(pre_prob)) %>% 
+    mutate(post_prob = as.numeric(post_prob))
