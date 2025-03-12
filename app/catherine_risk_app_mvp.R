@@ -237,8 +237,20 @@ server <- function(input, output, session) {
           )
       } else if (input$analysis_type == "Risk Cost") {
           # Add content for Risk Cost here
-          tags$p("This graph shows the total pre- and post-risk costs over a recent period and forecasts these costs for the next year, helping managers plan and allocate resources effectively.")
-          tags$img(src = "images/pre_post_cost_forecast.png", width = "700", height = "500")
+          fluidRow(
+              column(12, 
+                     tags$p("This graph shows the total pre- and post-risk costs over a recent period and forecasts these costs for the next year, helping managers plan and allocate resources effectively.")
+              ),
+              fluidRow(
+                  column(12, 
+                         tags$img(src = "images/pre_post_cost_forecast.png", width = "100%", height = "500")
+                  ),
+                  p("This plot visualises predicted values for pre-mitigation costs against respective cost savings. This is based on our forecasting model. It serves as an example of how different risk clusters and criticality levels may influence costs and savings after mitigation. In the future the plan would be for this to be used as a took where the user can input their various risks and get a forecast for their particular case."),
+                  column(12, 
+                         tags$img(src = "images/prediction_plot.svg", width = "100%", height = "500")
+                  )
+              )
+          )
       } else {
           # Add content for Regression here
           p("Regression analysis will be displayed here.")

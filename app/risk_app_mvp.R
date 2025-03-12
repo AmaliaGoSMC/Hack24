@@ -50,9 +50,9 @@ ui <- fluidPage(
         tabPanel("Summary", 
                  h3("Evidence-Based Recommendations"),
                  tags$ul(
-                   tags$li("Recommendation 1"),
-                   tags$li("Recommendation 2"),
-                   tags$li("Recommendation 3")
+                   tags$li("Recommendation 1: Based on the predictive analysis from the risk velocity graphs, it is evident that the highest rate of change for risk criticality, probability, and cost occurs early in the risk lifecycle (within 300 days). Specifically, these changes are most impactful within the initial period after a risk is reported. Therefore, it is crucial to implement mitigation strategies as soon as possible after risks are identified to prevent escalation and effectively manage their impact."),
+                   tags$li("Recommendation 2: Based on the clustering analysis from the dendrogram, it is evident which risk categories tend to co-occur. This insight is valuable for identifying potential risks that are likely to arise in a project when certain other risks are present. By understanding these co-occurrence patterns, project managers can better anticipate and prepare for potential risks, ensuring they stay on track and are proactive in managing risk dependencies."),
+                   tags$li("Recommendation 3: Based on the predictive analysis from the risk cost graphs, it is projected that both pre- and post-mitigation costs will decrease in 2020, as indicated by the moving average over the past 30 months. This trend provides valuable insights for project planning and cost allocation, enabling more accurate budgeting and resource management. By leveraging these projections, project managers can optimise financial planning and ensure more efficient use of resources.")
                  ),
                  
                  br(), br(),  # Add spacing
@@ -78,21 +78,44 @@ ui <- fluidPage(
         
         tabPanel("Risks", 
                  h3("Risk Trends Over Time"),
-                 plotOutput("risk_trend_plot"),
+                 HTML(paste0("The graph on the <b>right</b> shows the number of risks reported over a 30-month period.")),
+                 br(),
+                 HTML(paste0("<br> The graph on the <b>left</b> shows the monthly emergence rate of risks. Notably, it indicates that May and September have the highest number of risks raised, while June and December have lower emergence rates.")),
+                 fluidRow(
+                     column(6, 
+                            plotOutput("risk_trend_plot")),
+                     column(6, 
+                            tags$img(src = "images/monthly_emergence_rate.svg", width = "500", height = "500"))
+                 ),
                  br(),
                  h3("Risks & Mitigations per Project"),
-                 plotOutput("risk_mitigation_per_project")),
+                 p("The graph highlights the number of mitigations and risks per project, indicating which project required the most mitigations to address risks. This is important because it reveals the distribution of mitigations across projects and allows you to start asking questions about why some projects require more mitigations, such as differences in risk impact, project size, or cost."),
+                 plotOutput("risk_mitigation_per_project")
+        ),
         
         tabPanel("Mitigations", 
-                 DTOutput("mitigations_table")),
-        
+                 h3("Mitigation impact"),
+                 p("The chart below illustrates the success of mitigation by comparing the average change in risk probability and cost before and after mitigation."),
+                 p("On average, mitigation resulted in a decrease in both risk probability and cost, indicating a reduced impact on the organisation overall. This demonstrates the effectiveness of mitigation strategies in managing risk."),
+                 tags$img(src = "images/evaluating_success_rate_of_mitigation.svg", width = "500", height = "500")
+                 ),
         tabPanel("Opportunities", 
-                 h3("Coming Soon"),
-                 p("This section will include opportunities analysis.")),
+                 h3("Risk Opportunities"),
+                 p("This plot shows how different risk categories tend to occur together in projects. The closer two risk categories are in the diagram, the more often they co-occur. This helps identify potential risk dependencies and informs mitigation strategies."),
+                 div(style = "margin-top: -50px;", 
+                     tags$img(src = "images/risk_dendrogram.svg", width = "500", height = "500")),
+                 p("This chart shows the Top 20 Projects with the highest mitigation savings, grouped by risk clusters: Strategic & Technical, Supply Chain & Management, Financial & Operational, and Business & Bidding Risks. It helps identify which projects have benefited most from mitigation strategies and how savings are distributed across risk categories."),
+                 div(style = "margin-bottom: -50px;", 
+                     tags$img(src = "images/top_20_plot.svg", width = "500", height = "500")),
+        ),
         
         tabPanel("Predictive Analysis", 
-                 h3("Coming Soon"),
-                 p("This section will include predictive models for risk trends."))
+                 h3("Forecasting Risk"),
+                 p("This section will include predictive models for risk trends."),
+                 selectInput("analysis_type", "Select Analysis Type:", 
+                             choices = c("Risk Velocity", "Risk Cost", "Regression")),
+                 uiOutput("selected_analysis")
+        )
       )
     )
   )
@@ -193,6 +216,45 @@ server <- function(input, output, session) {
   
   output$mitigations_table <- renderDT({
     datatable(filtered_data(), options = list(pageLength = 10))
+  })
+  
+  output$selected_analysis <- renderUI({
+      if (input$analysis_type == "Risk Velocity") {
+          fluidRow(
+              column(12, 
+                     p("This graph illustrates the rate at which risks escalate in criticality over time, with H1 being the highest level of criticality. Focusing on the pre-mitigation criticality of risks, it is evident that the first 300 days after a risk is reported are crucial. During this period, the highest rate of escalation occurs."),
+                     p("The blue points indicate risks transitioning from H3 to H2, while the red points show risks escalating from H2 to the most critical level, H1.")
+                     ),
+              column(12, 
+                     tags$img(src = "images/risk_velocity_criticality.svg", width = "500", height = "500")),
+              fluidRow(
+                  p("The following two graphs build upon the previous analysis by examining the rate of change in risk probability and cost before mitigation. Consistent with the earlier findings, these graphs also demonstrate that the highest rate of change occurs within the first 300 days after a risk is reported"),
+                  column(6, 
+                         tags$img(src = "images/cost_change.svg", width = "500", height = "500")),
+                  column(6, 
+                         tags$img(src = "images/likelihood_impact.svg", width = "500", height = "500"))
+              ),
+          )
+      } else if (input$analysis_type == "Risk Cost") {
+          # Add content for Risk Cost here
+          fluidRow(
+              column(12, 
+                     tags$p("This graph shows the total pre- and post-risk costs over a recent period and forecasts these costs for the next year, helping managers plan and allocate resources effectively.")
+              ),
+              fluidRow(
+                  column(12, 
+                         tags$img(src = "images/pre_post_cost_forecast.png", width = "100%", height = "500")
+                  ),
+                  p("This plot visualises predicted values for pre-mitigation costs against respective cost savings. This is based on our forecasting model. It serves as an example of how different risk clusters and criticality levels may influence costs and savings after mitigation. In the future the plan would be for this to be used as a took where the user can input their various risks and get a forecast for their particular case."),
+                  column(12, 
+                         tags$img(src = "images/prediction_plot.svg", width = "100%", height = "500")
+                  )
+              )
+          )
+      } else {
+          # Add content for Regression here
+          p("Regression analysis will be displayed here.")
+      }
   })
 }
 
