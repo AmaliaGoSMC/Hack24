@@ -81,6 +81,7 @@ data_cleaned <- left_join(risk, mitigation, by = common_cols, relationship = "ma
             str_detect(main_risk_cat, "\\b12\\b") ~ "12. Acquisition and Offsets",
             str_detect(main_risk_cat, "\\b13\\b") ~ "13. Logistic Support and Services",
             str_detect(main_risk_cat, "\\b14\\b") ~ "14. Other Risks and Contingencies",
+            str_detect(main_risk_cat, "\\b15\\b") ~ "5. Project Management",
             TRUE ~ main_risk_cat  # Retain original value if no match
         )
     ) %>%
