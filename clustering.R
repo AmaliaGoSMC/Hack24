@@ -1,5 +1,6 @@
 # Risk Clustering: Highlighting interdependent risks prone to cascading failures.
-
+library(cluster)
+library(RColorBrewer)
 
 #  calculate clusters of risks --------------------------------------------
 
@@ -66,7 +67,8 @@ risk_dist <- dist(co_occ_matrix, method = "euclidean")
 risk_hclust <- hclust(risk_dist, method = "ward.D")
 # Catherine to make pretty
 # Plot dendrogram to visualize risk dependencies
-plot(risk_hclust, labels = colnames(co_occ_matrix), main = "Risk Co-Occurrence Clustering", cex = 0.8)
+plot(risk_hclust, labels = colnames(co_occ_matrix), main = "Risk Co-Occurrence Clustering", cex = 0.8, ylab = "", xlab = "", yaxt = "n")
+
 
 # Convert the co-occurrence matrix into a valid adjacency matrix
 co_occ_matrix[co_occ_matrix < 0] <- 0 # Ensure no negative values
