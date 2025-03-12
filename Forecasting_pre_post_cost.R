@@ -47,6 +47,12 @@ data_cleaned_pre_post_cost_yearly_chart <- data_cleaned_pre_post_cost_all %>%
 
 data_cleaned_pre_post_cost_yearly_chart
 
+ggsave(paste("/Users/cilemgul.bozdemir/dev/Hack/pre_post_cost_yearly_area_chart_di.png", sep=""),
+       plot = last_plot(), width = 960, height = 640, dpi = 72, units = "px")
+ggsave(paste("/Users/cilemgul.bozdemir/dev/Hack/pre_post_cost_yearly_chart_di.png", sep=""),
+       plot = last_plot(), width = 10, height = 6.6, dpi = 300, units = "in")
+
+
 #bar chart
 data_cleaned_pre_post_cost_yearly_bar_chart <- data_cleaned_pre_post_cost %>%
     mutate(filter_year = as_numeric(filter_year),
