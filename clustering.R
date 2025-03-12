@@ -54,8 +54,13 @@ risk_dist <- dist(co_occ_matrix, method = "euclidean")
 risk_hclust <- hclust(risk_dist, method = "ward.D")
 # Catherine to make pretty
 # Plot dendrogram to visualize risk dependencies
-plot(risk_hclust, labels = colnames(co_occ_matrix), main = "Risk Co-Occurrence Clustering", cex = 0.8, ylab = "", xlab = "", yaxt = "n")
+library(ggdendro)
 
+plot(risk_hclust, labels = colnames(co_occ_matrix), 
+                     main = "Risk Co-Occurrence Clustering", 
+                     cex = 0.8, ylab = "", xlab = "", yaxt = "n")
+
+cluster_plot <- recordPlot()
 
 # Convert the co-occurrence matrix into a valid adjacency matrix
 co_occ_matrix[co_occ_matrix < 0] <- 0 # Ensure no negative values
@@ -255,3 +260,22 @@ ggplot(top_20_project_savings, aes(x = reorder(project_id, mitigation_savings),
 # If Cluster 3 risks are high → The project may suffer from financial problems, poor quality, or customer issues.
 # 
 # If Cluster 4 risks are high → The project might fail to get funding or be stopped by unexpected events.
+
+# save the clusters as pictures
+
+# Open JPEG device
+jpeg("risk_dendrogram.jpeg", width = 11, height = 8, units = "in", res = 300)
+
+library(Cairo)
+library(svglite)
+
+# Open SVG device using svglite
+svglite("risk_dendrogram.svg", width = 11, height = 8)
+
+# Plot the dendrogram
+plot(risk_hclust, labels = colnames(co_occ_matrix),
+     main = "Risk Co-Occurrence Clustering",
+     cex = 0.8, ylab = "", xlab = "", yaxt = "n")
+
+# Close the SVG device
+dev.off()
