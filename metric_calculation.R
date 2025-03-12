@@ -49,7 +49,7 @@ criticality_range <- data_cleaned %>%
     mutate(
         prev_criticality = lag(criticality_level),
         prev_date = min(report_date),
-        change = criticality_level-prev_criticality ,
+        change = prev_criticality-criticality_level ,
         time_diff = as.numeric(difftime(report_date, prev_date, units = "days")),
         rate_of_change = ifelse(!is.na(change), change / time_diff, NA)
     ) %>% 
