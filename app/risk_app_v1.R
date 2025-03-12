@@ -6,7 +6,7 @@ library(dplyr)
 library(shinyWidgets)  # For styled cards
 
 # Load the cleaned dataset
-data_cleaned <- read.csv("~/Downloads/cleaned_data.csv", stringsAsFactors = FALSE)
+#data_cleaned <- read.csv("~/Downloads/cleaned_data.csv", stringsAsFactors = FALSE)
 
 # Convert report_date column to Date format
 data_cleaned$report_date <- as.Date(data_cleaned$report_date, format = "%Y-%m-%d")
