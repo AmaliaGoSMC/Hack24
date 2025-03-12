@@ -20,7 +20,7 @@ plot1 <- ggplot(criticality_range, aes(x = time_diff,
     geom_point(size = 1.5, aes(text = paste0("Time difference: ", time_diff,
                                              "<br> Rate of critical change: ", round(rate_of_change, 2),  # Round to 2 decimal places
                                              "<br> Trend: ", trend,
-                                             "<br> Strategy: ", strategy))) +
+                                             "<br> Strategy: ", strategy)), alpha = 0.7) +
     labs(title = "Time Difference vs. Rate of Critical Change", 
          x = "Time Difference (Days)", 
          y = "Rate of Change",
@@ -68,10 +68,9 @@ sankeyNetwork(Links = sankey_links, Nodes = sankey_nodes, Source = "source", Tar
 
 # Density plot of average probability changes before and after mit
 
-ggplot(avg_changes, aes(x = avg_prob_change, y = avg_cost_change)) +
+plot2 <- ggplot(avg_changes, aes(x = avg_prob_change, y = avg_cost_change, text = paste("Probability Change:", round(avg_prob_change, 2), "\nCost Change:", round(avg_cost_change, 2)))) +
     geom_point(aes(color = avg_prob_change + avg_cost_change), alpha = 1, size = 3) +
-    scale_color_gradient2(low = "darkgreen", high = "darkred", midpoint = 0,
-                          name = "Combined\nChange") +
+    scale_color_gradient2(low = "darkgreen", high = "darkred", midpoint = 0, name = "Combined\nChange") +
     geom_hline(yintercept = 0, linetype = "dashed", color = "gray") +
     geom_vline(xintercept = 0, linetype = "dashed", color = "gray") +
     labs(title = "Impact of Mitigations on Probability vs Cost",
@@ -79,7 +78,6 @@ ggplot(avg_changes, aes(x = avg_prob_change, y = avg_cost_change)) +
          x = "Average Probability Change", 
          y = "Average Cost Change") +
     theme_minimal() +
-    # Add quadrant labels
     annotate("text", x = min(avg_changes$avg_prob_change)/2, y = max(avg_changes$avg_cost_change)/2, 
              label = "Lower probability\nHigher cost", color = "gray30") +
     annotate("text", x = max(avg_changes$avg_prob_change)/2, y = max(avg_changes$avg_cost_change)/2, 
@@ -89,10 +87,14 @@ ggplot(avg_changes, aes(x = avg_prob_change, y = avg_cost_change)) +
     annotate("text", x = max(avg_changes$avg_prob_change)/2, y = min(avg_changes$avg_cost_change)/2, 
              label = "Higher probability\nLower cost", color = "gray30")
 
+plotly_plot2 <- ggplotly(plot2, tooltip = "text")
+plotly_plot2
+
 
 #  3. Emergence Rate: Identifying periods of triggers associated with new risk idenitifcation ----------------------------------------------------- 
 
-ggplot(emergence_rate, aes(x = month_name, y = emergence_rate)) +
+plot3 <- ggplot(emergence_rate, aes(x = month_name, y = emergence_rate, 
+                                    text = paste0("Emergence Rate: ", round(emergence_rate, 2)))) +
     geom_bar(stat = "identity", fill = "skyblue") +
     labs(title = "Emergence Rate per Month",
          x = "Month", y = "Emergence Rate") +
@@ -101,18 +103,31 @@ ggplot(emergence_rate, aes(x = month_name, y = emergence_rate)) +
         axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)
     )
 
+plotly_plot3 <- ggplotly(plot3, tooltip = "text")
+plotly_plot3
+
 #4. Likelihood of Risk and Impact Drift: Tracking shifts in project risk exposure ----------------------------------------------------- 
-ggplot(probability_change, aes(x = report_date, y = rate_of_change)) +
-    geom_point() +
+plot4 <- ggplot(probability_change, aes(x = time_diff, y = rate_of_change,  text = paste0("Rate of change: ", round(rate_of_change, 4), 
+                                                                                          "<br>Time difference:",time_diff ))) +
+    geom_point(color = "skyblue") +
     labs(title = "Rate of Change in Probability Over Time",
-         x = "Report Date", y = "Rate of Change") +
-    theme_classic()
+         x = "Time Difference (Days)", y = "Rate of Change") +
+    theme_classic() +
+    geom_vline(xintercept = 300, linetype = "dashed", color = "red")
+
+plotly_plot4 <- ggplotly(plot4, tooltip = "text")
+plotly_plot4
 
 # Plot rate of change in cost over time
-ggplot(cost_change, aes(x = report_date, y = rate_of_change)) +
-    geom_point() +
+plot5 <- ggplot(cost_change, aes(x = time_diff, y = rate_of_change,  text = paste0("Rate of change: ", round(rate_of_change, 4), 
+                                                                                   "<br>Time difference: ",time_diff ))) +
+    geom_point(color = "skyblue") +
     labs(title = "Rate of Change in Cost Over Time",
-         x = "Report Date", y = "Rate of Change") +
-    theme_classic()
+         x = "Time Difference (Days)", y = "Rate of Change") +
+    theme_classic() +
+    geom_vline(xintercept = 300, linetype = "dashed", color = "red")
+
+plotly_plot5 <- ggplotly(plot5, tooltip = "text")
+plotly_plot5
 
 
