@@ -220,9 +220,7 @@ ggplot(top_20_project_savings, aes(x = reorder(project_id, mitigation_savings),
 # 
 # 🛑 Why It’s Risky:
 #     Even well-managed projects can collapse due to financial issues or operational failures.
-# 
-# 
-# ---
+
 #     
 #     🟢 Cluster 4: Business & Bidding Risks
 # 
