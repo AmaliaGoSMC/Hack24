@@ -113,7 +113,7 @@ print(new_project)
 
 # Plot
 
-ggplot(new_project, aes(x = Pre_Mitigation_Cost*1000, y = Cost_Savings*1000, 
+prediction_plot <- ggplot(new_project, aes(x = Pre_Mitigation_Cost*1000, y = Cost_Savings*1000, 
                         color = cluster_name, size = criticality_name, shape = cluster_name)) +
     geom_point(alpha = 0.8) +
     # scale_color_manual(values = c("red", "blue", "green", "purple")) + # Customize cluster colors
@@ -127,3 +127,13 @@ ggplot(new_project, aes(x = Pre_Mitigation_Cost*1000, y = Cost_Savings*1000,
          shape = "Risk Cluster") +
     theme_minimal()
 
+# Open SVG device using svglite
+svglite("prediction_plot.svg", width = 11, height = 8)
+
+# Plot the dendrogram
+plot(prediction_plot, labels = colnames(co_occ_matrix),
+     main = "Risk Co-Occurrence Clustering",
+     cex = 0.8, ylab = "", xlab = "", yaxt = "n")
+
+# Close the SVG device
+dev.off()
