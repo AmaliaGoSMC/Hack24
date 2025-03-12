@@ -1,5 +1,8 @@
 # Risk Clustering: Highlighting interdependent risks prone to cascading failures.
 
+
+#  calculate clusters of risks --------------------------------------------
+
 # Count co-occurrences of risk categories within the same Project_ID
 risk_co_occurrence <- data_cleaned %>%
     select(project_id, main_risk_cat) %>%
@@ -103,7 +106,7 @@ co_occ_matrix <- scale(co_occ_matrix)
 # Step 2: Perform Hierarchical Clustering
 risk_dist <- dist(co_occ_matrix, method = "euclidean")
 risk_hclust <- hclust(risk_dist, method = "ward.D")
-
+# Catherine to make pretty
 # Plot dendrogram to visualize risk dependencies
 plot(risk_hclust, labels = colnames(co_occ_matrix), main = "Risk Co-Occurrence Clustering", cex = 0.8)
 
@@ -313,75 +316,6 @@ print(head(project_exposure_summary))
 top_projects <- project_exposure_summary %>% 
     slice_max(total_risk_exposure, n = 10)
 
-# most risky --------------------------------------------------------------
-# Bar chart visualization
-ggplot(top_projects, aes(x = reorder(project_id, total_risk_exposure), y = total_risk_exposure)) +
-    geom_bar(stat = "identity", fill = "red", alpha = 0.7) +
-    coord_flip() +
-    theme_minimal() +
-    labs(title = "Top 10 High-Risk Projects", x = "Project ID", y = "Total Risk Exposure")
-
-
-
-# Merge risk clusters with cost data
-cluster_costs <- data_cleaned %>%
-    left_join(risk_cluster_summary, by = c("main_risk_cat" = "Risk_Category")) %>%
-    group_by(Cluster) %>%
-    summarise(
-        total_pre_mitigation_cost = sum(pre_factored_cost, na.rm = TRUE),
-        total_post_mitigation_cost = sum(post_factored_cost, na.rm = TRUE),
-        mitigation_savings = total_pre_mitigation_cost - total_post_mitigation_cost,
-        mitigation_effectiveness = (mitigation_savings / total_pre_mitigation_cost) * 100 # % reduction
-    ) %>%
-    arrange(desc(total_pre_mitigation_cost))
-
-# View results
-print(cluster_costs)
-
-
-# Merge project risk exposure with cost data
-project_costs <- data_cleaned %>%
-    left_join(project_exposure_summary, by = "project_id") %>%
-    group_by(project_id) %>%
-    summarise(
-        total_pre_mitigation_cost = sum(pre_factored_cost, na.rm = TRUE),
-        total_post_mitigation_cost = sum(post_factored_cost, na.rm = TRUE),
-        mitigation_savings = total_pre_mitigation_cost - total_post_mitigation_cost,
-        mitigation_effectiveness = (mitigation_savings / total_pre_mitigation_cost) * 100 # % cost reduction
-    ) %>%
-    arrange(desc(total_pre_mitigation_cost))
-
-# most costly -------------------------------------------------------------
-
-# Filter only the top 10 highest-risk projects
-top_project_costs <- project_costs %>%
-    filter(project_id %in% top_projects$project_id)
-
-
-ggplot(top_project_costs, aes(x = reorder(project_id, total_pre_mitigation_cost), 
-                              y = total_pre_mitigation_cost)) +
-    geom_bar(stat = "identity", fill = "red", alpha = 0.7) +
-    coord_flip() +
-    theme_minimal() +
-    labs(title = "Top 10 Most Expensive Projects", x = "Project ID", y = "Total Pre-Mitigation Cost")
-
-# Rank projects by highest mitigation savings
-top_savings_projects <- project_costs %>%
-    slice_max(mitigation_savings, n = 10)
-
-# View results
-print(top_savings_projects)
-
-# most savings ------------------------------------------------------------
-
-ggplot(top_savings_projects, aes(x = reorder(project_id, mitigation_savings), 
-                                 y = mitigation_savings)) +
-    geom_bar(stat = "identity", fill = "red", alpha = 0.7) +
-    coord_flip() + # Keeps the bar chart horizontal
-    theme_minimal() +
-    labs(title = "Top 10 Projects with the Highest Mitigation Savings", 
-         x = "Project ID", y = "Total Savings from Mitigation")
-
 
 # cluster costs -----------------------------------------------------------
 
@@ -396,6 +330,7 @@ top_20_savings_projects <- project_cluster_costs %>%
 top_20_project_savings <- project_cluster_costs %>%
     filter(project_id %in% top_20_savings_projects$project_id)
 
+# Catherine to make pretty
 ggplot(top_20_project_savings, aes(x = reorder(project_id, mitigation_savings), 
                                    y = mitigation_savings, fill = as.factor(Cluster))) +
     geom_bar(stat = "identity", alpha = 0.8) +
