@@ -189,6 +189,8 @@ plot6 <- ggplot(top_20_project_savings, aes(x = reorder(project_id, mitigation_s
 plotly_plot6 <- ggplotly(plot6, tooltip = "text")
 plotly_plot6
 
+ggsave("app/www/images/top_20_plot.svg", plot = plot6, width = 8, height = 6, dpi = 300)
+
 
 
 # Comments for Rosa to add to narrative
