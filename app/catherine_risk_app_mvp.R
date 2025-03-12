@@ -78,15 +78,21 @@ ui <- fluidPage(
         
         tabPanel("Risks", 
                  h3("Risk Trends Over Time"),
-                 plotOutput("risk_trend_plot"),
+                 fluidRow(
+                     column(6, 
+                            plotOutput("risk_trend_plot")),
+                     column(6, 
+                            tags$img(src = "images/monthly_emergence_rate.svg", width = "500", height = "500"))
+                 ),
                  br(),
                  h3("Risks & Mitigations per Project"),
-                 plotOutput("risk_mitigation_per_project")),
+                 plotOutput("risk_mitigation_per_project")
+        ),
         
         tabPanel("Mitigations", 
                  h3("Mitigation impact"),
-                 p("Chart Explanation"),
-                 tags$img(src = "images/evaluating_success.png", width = "500", height = "500")
+                 p("Chart Explanation: This chart shows the success rate of mitigation by looking at the average risk probability change and cost change before/after mitigation"),
+                 tags$img(src = "images/evaluating_success_rate_of_mitigation.svg", width = "500", height = "500")
                  ),
         
         tabPanel("Opportunities", 
