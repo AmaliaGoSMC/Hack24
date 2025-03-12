@@ -3,6 +3,7 @@ suppressPackageStartupMessages({
     library(readr)
     library(readODS)
     library(readxl)
+    library(forecast)
     library(haven)
     library(gnm)
     library(logmult)
