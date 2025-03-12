@@ -163,14 +163,33 @@ top_20_project_savings <- project_cluster_costs %>%
     filter(project_id %in% top_20_savings_projects$project_id)
 
 # Catherine to make pretty
-ggplot(top_20_project_savings, aes(x = reorder(project_id, mitigation_savings), 
-                                   y = mitigation_savings, fill = as.factor(Cluster))) +
+
+top_20_project_savings = top_20_project_savings %>% 
+    mutate(cluster_name = 
+               case_when(
+                   Cluster == 1 ~ "Strategic & Technical Risks",
+                   Cluster == 2 ~ "Supply Chain & Management Risks",
+                   Cluster == 3 ~ "Financial & Operational Risks",
+                   Cluster == 4 ~ "Business & Bidding Risks"))
+
+
+plot6 <- ggplot(top_20_project_savings, aes(x = reorder(project_id, mitigation_savings), 
+                                   y = mitigation_savings, fill = as.factor(cluster_name), text = paste0("Cluster name:",cluster_name,
+                                                                                                         "<br>Mitigation savings:",round(mitigation_savings,2)))) +
     geom_bar(stat = "identity", alpha = 0.8) +
     coord_flip() +
     theme_minimal() +
     labs(title = "Top 20 Projects with the Highest Mitigation Savings: Cost Breakdown by Cluster", 
-         x = "Project ID", y = "Total Savings from Mitigation", fill = "Risk Cluster") +
-    scale_fill_brewer(palette = "Set2") # Assign distinct colors to clusters
+         x = "", y = "Total Savings from Mitigation", fill = "Risk Cluster") +
+    scale_y_continuous(labels = function(x) format(x, scientific = FALSE) %>%
+                           gsub("000$", "K", .)) +
+    scale_fill_brewer(palette = "Set2")  # Assign distinct colors to clusters
+
+
+plotly_plot6 <- ggplotly(plot6, tooltip = "text")
+plotly_plot6
+
+
 
 # Comments for Rosa to add to narrative
 # 🔴 Cluster 1: Strategic & Business-Critical Risks
