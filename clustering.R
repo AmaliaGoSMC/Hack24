@@ -31,19 +31,6 @@ risk_clusters <- cutree(risk_hclust, k = num_clusters)
 risk_cluster_map <- tibble(Risk_Category = names(risk_clusters), Cluster = risk_clusters)
 print(risk_cluster_map)
 
-# This dendrogram shows how different Risk Categories are grouped based on their co-occurrence patterns within projects. It helps identify interdependent risks that are more likely to cascade.
-# 
-# Key Takeaways from Your Dendrogram
-# 
-# 1. Hierarchical Structure
-# 
-# Risks closer together on the tree are more likely to co-occur in projects.
-# 
-# Risks merged at lower heights (shorter branches) are highly interdependent.
-# 
-# Risks merged at higher heights are less related but still share some co-occurrence.
-# 
-
 # Load necessary libraries
 library(igraph)
 library(cluster)
@@ -181,81 +168,90 @@ ggplot(top_20_project_savings, aes(x = reorder(project_id, mitigation_savings),
     scale_fill_brewer(palette = "Set2") # Assign distinct colors to clusters
 
 # Comments for Rosa to add to narrative
-# 🔴 Cluster 1: Strategic & Technical Risks
+# 🔴 Cluster 1: Strategic & Business-Critical Risks
 # 
-# These risks affect the overall direction and technical success of a project. If they go wrong, the project could fail due to poor planning, integration issues, or legal complications.
+# These are big-picture risks that can impact the entire direction of a project. If these go wrong, the project could fail due to poor planning, weak leadership, or compliance failures.
+# 
 # 📌 Includes:
 #     
-#     Business Strategy & Objectives → Poor planning, unclear goals, shifting priorities.
+#     Business Strategy & Objectives → Poor planning, changing goals.
 # 
-# System Integration, Verification & Validation → Failures when combining different systems.
-# 
-# Contractual/Legal → Legal disputes, compliance failures, contract breaches.
-# 
-# Hardware/Software Development → Problems in building or coding technology.
-# 
-# 
-# 🛑 Why It’s Risky:
-#     If you don’t get these right at the start, your project may never be completed successfully.
-# 
-# 
-#     
-#     🟠 Cluster 2: Supply Chain & Management Risks
-# 
-# These risks involve managing resources, logistics, and supplies. If things go wrong, the project might face delays, shortages, or extra costs.
-# 📌 Includes:
-#     
-#     Supply Chain → Delivery failures, missing parts, supplier issues.
+# System Integration, Verification & Validation → Tech systems not working together.
 # 
 # Project Management → Poor leadership, bad coordination, missed deadlines.
 # 
+# Contractual/Legal → Contract disputes, regulatory problems.
+# 
+# Hardware/Software Development → Tech failures that prevent project completion.
+# 
 # 
 # 🛑 Why It’s Risky:
-#     Even if everything else is perfect, a project can fail if it lacks resources or isn’t managed well.
-# 
-# 
+#     If a project doesn’t have a strong plan, leadership, or legal foundation, it may never succeed.
+
 #     
-#     🟡 Cluster 3: Financial & Operational Risks
+#     🟠 Cluster 2: Operational & Execution Risks
 # 
-# These risks impact how money, customers, and operations are handled. If they go wrong, the project may become too expensive or fail to meet expectations.
+# These risks impact the execution of a project—whether it has the right resources, people, and systems in place to succeed.
+# 
 # 📌 Includes:
 #     
-#     Acquisition and Offsets → Buying the wrong resources or bad trade-offs.
-# 
-# Logistic Support & Services → Problems with maintenance, staffing, and day-to-day operations.
-# 
-# Other Risks & Contingencies → Unexpected problems affecting operations.
-# 
-# Customers → Issues with meeting client needs or losing customers.
-# 
-# Finance → Budget overruns, financial mismanagement.
+#     Supply Chain → Delays or shortages in materials.
 # 
 # System Engineering → Complex technical failures.
 # 
+# System Integration → Issues when merging different components.
+# 
+# Acquisition & Offsets → Buying the wrong resources or trade-offs.
+# 
+# Operations & Maintenance → Problems with ongoing project upkeep.
+# 
 # 
 # 🛑 Why It’s Risky:
-#     Even well-managed projects can collapse due to financial issues or operational failures.
+#     Even a well-planned project can fail if it doesn’t have the right materials, engineering, or maintenance.
+# 
 
 #     
-#     🟢 Cluster 4: Business & Bidding Risks
+#     🟡 Cluster 3: Support & Customer-Facing Risks
 # 
-# These risks affect the business side of the project—whether it wins funding, secures contracts, or stays competitive.
+# These risks affect the people and processes that support the project. If these fail, the project may suffer from delays, customer complaints, or financial trouble.
+# 
+# 📌 Includes:
+#     
+#     Quality → Defective products or unmet standards.
+# 
+# Logistic Support & Services → Problems with staffing, transportation, and maintenance.
+# 
+# Customers → Not meeting client needs or complaints.
+# 
+# Finance → Budget overruns, financial mismanagement.
+# 
+# 
+# 🛑 Why It’s Risky:
+#     A project might technically work but still fail due to poor quality, bad logistics, or financial losses.
+# 
+
+#     
+#     🟢 Cluster 4: Business & Competitive Risks
+# 
+# These risks impact whether a project can be funded and remain competitive.
+# 
 # 📌 Includes:
 #     
 #     Bid Management → Losing funding or contracts.
 # 
+# Other Risks & Contingencies → Unexpected problems that disrupt work.
+# 
 # 
 # 🛑 Why It’s Risky:
-#     A project can fail before it even starts if it doesn’t win bids or funding.
-# 
-# 
+#     Even if a project is well-planned and executed, it might never start if it loses funding.
+
 #     
-#     📢 Final Takeaway
+#     📢 Final Takeaways
 # 
-# If Cluster 1 risks are high → The whole project strategy and technical execution is at risk.
+# If Cluster 1 risks are high → The whole project direction and leadership is in danger.
 # 
-# If Cluster 2 risks are high → The project may struggle with delays and poor coordination.
+# If Cluster 2 risks are high → The project might lack the right materials, engineering, or maintenance.
 # 
-# If Cluster 3 risks are high → The project may suffer from financial issues or operational failures.
+# If Cluster 3 risks are high → The project may suffer from financial problems, poor quality, or customer issues.
 # 
-# If Cluster 4 risks are high → The project may not even get off the ground due to lost bids or funding.
+# If Cluster 4 risks are high → The project might fail to get funding or be stopped by unexpected events.
