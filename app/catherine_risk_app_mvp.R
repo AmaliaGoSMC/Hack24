@@ -78,6 +78,9 @@ ui <- fluidPage(
         
         tabPanel("Risks", 
                  h3("Risk Trends Over Time"),
+                 HTML(paste0("The graph on the <b>right</b> shows the number of risks reported over a 30-month period.")),
+                 br(),
+                 HTML(paste0("<br> The graph on the <b>left</b> shows the monthly emergence rate of risks. Notably, it indicates that May and September have the highest number of risks raised, while June and December have lower emergence rates.")),
                  fluidRow(
                      column(6, 
                             plotOutput("risk_trend_plot")),
@@ -91,17 +94,26 @@ ui <- fluidPage(
         
         tabPanel("Mitigations", 
                  h3("Mitigation impact"),
-                 p("Chart Explanation: This chart shows the success rate of mitigation by looking at the average risk probability change and cost change before/after mitigation"),
+                 p("The chart below illustrates the success of mitigation by comparing the average change in risk probability and cost before and after mitigation."),
+                 p("On average, mitigation resulted in a decrease in both risk probability and cost, indicating a reduced impact on the organisation overall. This demonstrates the effectiveness of mitigation strategies in managing risk."),
                  tags$img(src = "images/evaluating_success_rate_of_mitigation.svg", width = "500", height = "500")
                  ),
-        
         tabPanel("Opportunities", 
-                 h3("Coming Soon"),
-                 p("This section will include opportunities analysis.")),
+                 h3("Risk Opportunities"),
+                 p("This section will include opportunities analysis."),
+                 div(style = "margin-bottom: -50px;", 
+                     tags$img(src = "images/top_20_plot.svg", width = "500", height = "500")),
+                 div(style = "margin-top: -50px;", 
+                     tags$img(src = "images/risk_dendrogram.svg", width = "500", height = "500"))
+        ),
         
         tabPanel("Predictive Analysis", 
-                 h3("Coming Soon"),
-                 p("This section will include predictive models for risk trends."))
+                 h3("Forecasting Risk"),
+                 p("This section will include predictive models for risk trends."),
+                 selectInput("analysis_type", "Select Analysis Type:", 
+                             choices = c("Risk Velocity", "Risk Cost", "Regression")),
+                 uiOutput("selected_analysis")
+        )
       )
     )
   )
@@ -202,6 +214,23 @@ server <- function(input, output, session) {
   
   output$mitigations_table <- renderDT({
     datatable(filtered_data(), options = list(pageLength = 10))
+  })
+  
+  output$selected_analysis <- renderUI({
+      if (input$analysis_type == "Risk Velocity") {
+          fluidRow(
+              column(12, 
+                     p("This graph illustrates the rate at which escalates. Focusing, on the pre mitigation criticality of the risk it can be seen that")),
+              column(12, 
+                     tags$img(src = "images/risk_velocity_criticality.svg", width = "500", height = "500"))
+          )
+      } else if (input$analysis_type == "Risk Cost") {
+          # Add content for Risk Cost here
+          p("Risk Cost analysis will be displayed here.")
+      } else {
+          # Add content for Regression here
+          p("Regression analysis will be displayed here.")
+      }
   })
 }
 
